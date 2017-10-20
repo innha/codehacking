@@ -1,1 +1,8 @@
-<h1>It works!</h1>
+@extends('layouts.admin')
+
+
+@section('content')
+
+<h1>Users</h1>
+
+@endsection
