@@ -23,6 +23,17 @@ Route::get('/admin', function() {
 	return view('admin.index');
 });
 
-Route::resource('/admin/users', 'AdminUsersController');
+Route::resource('/admin/users', 'AdminUsersController', ['as' => 'admin'], 
+	['name' => [
+
+		'admin/users' => 'admin.users.index',
+		'create' => 'admin.users.create',
+		'store' => 'admin.users.store',
+		'show' => 'admin.users.show',
+		'edit' => 'admin.users.edit',
+		'update' => 'admin.users.update',
+		'destroy' => 'admin.users.destroy'
+	]]
+);
 // Route::resource('/admin/posts', 'AdminPostsController');
 // Route::resource('/admin/categoriess', 'AdminCategoriesController');
