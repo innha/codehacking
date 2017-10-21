@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Role;
-use App\Http\Requests\UsersRequest;
+use App\Http\Requests\UsersEditRequest;
 use App\Photo;
 
 class AdminUsersController extends Controller
@@ -90,7 +90,10 @@ class AdminUsersController extends Controller
      */
     public function edit($id)
     {
-        return view('admin.users.edit');
+        $user = User::findorFail($id);
+        $roles = Role::pluck('name', 'id')->all();
+
+        return view('admin.users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -100,9 +103,44 @@ class AdminUsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UsersEditRequest $request, $id)
     {
-        //
+        // return $request->all();   
+
+        if(trim($request->password) == '')      {
+            $input = $request->except('password');
+        } else {
+            $input = $request->all();
+            $input['password'] = bcrypt($request->password);
+        }
+
+        $user = User::findorFail($id);
+
+        // return $user;        
+
+        // return $input;
+
+
+        if($file = $request->file('photo_id')) {
+            $name = time() . '_' . $file->getClientOriginalName();
+
+            $file->move('images', $name);
+
+            $photo = Photo::create(['file' => $name ]);
+
+            $input['photo_id'] = $photo->id;            
+
+
+        }
+
+        $input['is_active'] = $request->is_active;     
+
+        // return $input;
+
+        $user->update($input);
+
+        return redirect(route('admin.users.index'));
+
     }
 
     /**
