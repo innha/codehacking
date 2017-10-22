@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Role;
+use App\Http\Requests\UsersRequest;
 use App\Http\Requests\UsersEditRequest;
 use App\Photo;
+use Session;
 
 class AdminUsersController extends Controller
 {
@@ -151,6 +153,16 @@ class AdminUsersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // return 'destroy ' . $id;
+
+        $user = User::findorFail($id);
+
+        unlink(public_path() . $user->photo->file);
+
+        Session::flash('deleted_user', 'The user (id = ' . $id . ') has been deleted');
+
+        $user->delete();
+
+        return redirect(route('admin.users.index'));
     }
 }
